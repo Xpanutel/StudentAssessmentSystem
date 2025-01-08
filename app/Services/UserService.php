@@ -19,6 +19,6 @@ class UserService
 
     public function getCurrentUser(): ?array
     {
-        return $this->userRepository->getUserByUsername($_SESSION['username']);
+        return $this->userRepository->getUserByUsername($_SESSION['requestData']['username']);
     }
 }

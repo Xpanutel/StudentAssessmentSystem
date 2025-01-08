@@ -13,13 +13,13 @@ class UserController
     {
         try {
             $this->userService->registerUser($requestData['username'], $requestData['password'], $requestData['role'], $requestData['email']);
-            $_SESSION['username'] = $requestData['username'];
+            $_SESSION['requestData'] = $requestData;
         } catch (Exception $e) {
             throw $e; 
         }
     }
 
-    public function getCurrentUser (): ?array
+    public function getCurrentUser(): ?array
     {
         return $this->userService->getCurrentUser();
     }

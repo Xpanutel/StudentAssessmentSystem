@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Регистрация</h1>
-    <form action="index.php?action=register" method="POST">
+    <form action="/register" method="POST">
         <label for="username">Имя пользователя:</label>
         <input type="text" name="username" required>
         <br>
