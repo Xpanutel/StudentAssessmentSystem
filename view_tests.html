@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список тестов</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Список тестов</h1>
+        <table class="table mt-4">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Здесь будет динамическое заполнение тестов из базы данных -->
+                <tr>
+                    <td>1</td>
+                    <td>Тест по математике</td>
+                    <td>Основы арифметики</td>
+                    <td><a href="take_test.php?id=1" class="btn btn-success">Пройти тест</a></td>
+                </tr>
+                <!-- Добавьте другие тесты аналогично -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
