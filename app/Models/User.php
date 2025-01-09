@@ -34,11 +34,12 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    public function findByEmail(string $email): ?array
-    {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
-        $stmt->execute([':email' => $email]);
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    public function findByEmail(string $email): ?array {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+        $stmt->execute(['email' => $email]);
+        $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $userData ?: null;
     }
 
     public function update(int $id, string $username, string $role, string $email): void

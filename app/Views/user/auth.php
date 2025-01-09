@@ -12,6 +12,7 @@
 
 <body>
     <div class="container" id="container">
+        
         <div class="form-container sign-up">
             <form action="/register" method="POST">
                 <h2 class="reg">Зарегистрироваться</h2>
@@ -24,24 +25,19 @@
                         <option value="student">Ученик</option>
                     </select>
                 </div>
-                <button >Войти</button>
+                <button>Зарегистрироваться</button>
             </form>
         </div>
+
         <div class="form-container sign-in">
             <form action="/login" method="POST">
                 <h1 id="text"></h1>
                 <input type="email" placeholder="Email" name="email" required>
                 <input type="password" placeholder="Пароль" name="password" required>
-                <div class="form-group">
-                    <select class="form-control" id="role" name="role" required>
-                        <option value="teacher">Преподаватель</option>
-                        <option value="student">Ученик</option>
-                    </select>
-                </div>
-                <!-- <button class="btn btn-success mb-2 w-100" onclick="window.location.href='../page/Test.html';">Войти</button> -->
                 <button class="btn btn-success mb-2 w-100"">Войти</button>
             </form>
         </div>
+
         <div class="toggle-container">
             <div class="toggle">
                 <div class="toggle-panel toggle-left">

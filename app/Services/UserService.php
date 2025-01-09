@@ -17,28 +17,19 @@ class UserService
         $this->userRepository->createUser($username, $password, $role, $email);
     }
 
-    public function loginUser(string $email, string $password): ?array
-    {
+    public function authenticate(string $email, string $password): array {
         $user = $this->userRepository->getUserByEmail($email);
-
+    
         if (!$user) {
-            throw new Exception('Пользователь с таким email не найден.');
+            throw new Exception("Пользователь не найден. Email: $email");
         }
 
         if (!password_verify($password, $user['password'])) {
-            throw new Exception('Неверный пароль.');
+            throw new Exception("Неверный пароль");
         }
-
-        return [
-            'id' => $user['id'],
-            'email' => $user['email'],
-            'name' => $user['username'],
-            'role' => $user['role'],
-        ];
+    
+        return $user; 
     }
-
-    public function getCurrentUser(): ?array
-    {
-        return $this->userRepository->getUserByUsername($_SESSION['requestData']['username']);
-    }
+    
+    public function getCurrentUser(): ?array { return $this->userRepository->getUserByUsername($_SESSION['user']['username']); }
 }
