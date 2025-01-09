@@ -34,6 +34,13 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
+    public function findByEmail(string $email): ?array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute([':email' => $email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
     public function update(int $id, string $username, string $role, string $email): void
     {
         $stmt = $this->db->prepare("UPDATE users SET username = :username, role = :role, email = :email, updated_at = CURRENT_TIMESTAMP WHERE id = :id");
@@ -53,7 +60,6 @@ class User
 
     public function getCurrentUser(): ?array
     {
-        // Предполагается, что ID пользователя хранится в сессии
         if (isset($_SESSION['user_id'])) {
             return $this->findById($_SESSION['user_id']);
         }

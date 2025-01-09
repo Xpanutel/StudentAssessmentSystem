@@ -24,6 +24,11 @@ class UserRepository
         return $this->userModel->findByUsername($username);
     }
 
+    public function getUserByEmail(string $email): ?array
+    {
+        return $this->userModel->findByEmail($email);
+    }
+
     public function updateUser(int $id, string $username, string $role, string $email): void
     {
         $this->userModel->update($id, $username, $role, $email);

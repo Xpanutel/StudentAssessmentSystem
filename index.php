@@ -66,6 +66,18 @@ $router->post('/register', function() use ($userController){
     }
 });
 
+$router->post('/login', function() use ($userController){
+    $requestData = $_POST;
+    try {
+        $userController->login($requestData);
+        echo "<p>Пользователь успешно зарегистрирован!</p>";
+        header("Location: /profile");
+    } catch (Exception $e) {
+        echo "Ошибка: " . $e->getMessage();
+        include 'app/Views/user/register.php';
+    }
+});
+
 $router->get('/addtest', function() {
     include 'app/Views/test/add_test.php';
 });

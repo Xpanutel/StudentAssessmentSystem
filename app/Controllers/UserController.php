@@ -19,6 +19,25 @@ class UserController
         }
     }
 
+    public function login(array $requestData): void
+    {
+        try {
+            if (empty($requestData['email']) || empty($requestData['password'])) {
+                throw new Exception('Необходимо заполнить все поля');
+            }
+            $user = $this->userService->loginUser($requestData['email'], $requestData['password']);
+            $_SESSION['loginUser'] = [
+                'id' => $user['id'],
+                'email' => $user['email'],
+                'username' => $user['username'],
+                'role' => $user['role'],
+            ];
+        } catch (Exception $e) {
+            echo "Ошибка: " . htmlspecialchars($e->getMessage()); 
+            include '/app/Views/user/register.php'; 
+        }
+    }
+
     public function getCurrentUser(): ?array
     {
         return $this->userService->getCurrentUser();
