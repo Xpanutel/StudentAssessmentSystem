@@ -18,6 +18,7 @@ require_once __DIR__ . '/app/Repositories/TestRepository.php';
 require_once __DIR__ . '/app/Controllers/TestController.php';
 // Подключение миддливаре
 require_once __DIR__ . '/app/Middleware/RoleMiddleware.php';
+require_once __DIR__ . '/app/Middleware/AuthMiddleware.php';
 
 
 // Иницииализация бд
@@ -39,7 +40,9 @@ $testRepository = new TestRepository($testModel);
 $testService = new TestService($testRepository);
 $testController = new TestController($testService);
 
+// Инициализция миддлеваре
 $roleMiddleware = new RoleMiddleware();
+$authMiddleware = new AuthMiddleware();
 
 // Тут пишем маршуруты
 $router->get('/auth', function() {
@@ -71,7 +74,8 @@ $router->post('/login', function() use ($userController){
     }
 });
 
-$router->get('/profile', function() use ($userController, $roleMiddleware){
+$router->get('/profile', function() use ($userController, $roleMiddleware, $authMiddleware){
+    $authMiddleware->checkAuth();
     $user = $userController->getCurrentUser();
     include 'app/Views/user/profile.php';
 });
