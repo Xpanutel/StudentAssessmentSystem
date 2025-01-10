@@ -26,38 +26,15 @@ CREATE TABLE tests (
     FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
--- Таблица вопросов
+--  Вопросы для тестов
 CREATE TABLE questions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    test_id INT NOT NULL,
+    test_id INT NOT NULL UNIQUE,
     question_text TEXT NOT NULL,
-    question_type ENUM('multiple_choice', 'open') NOT NULL,
+    correct_answer TEXT NOT NULL,  
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (test_id) REFERENCES tests(id)
-);
-
--- Таблица ответов
-CREATE TABLE answers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    question_id INT NOT NULL,
-    answer_text TEXT NOT NULL,
-    is_correct TINYINT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (question_id) REFERENCES questions(id)
-);
-
--- Таблица результатов
-CREATE TABLE results (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    student_id INT NOT NULL,
-    test_id INT NOT NULL,
-    score INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (student_id) REFERENCES users(id),
-    FOREIGN KEY (test_id) REFERENCES tests(id)
+    FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE
 );
 
 -- Таблица практических работ
@@ -73,12 +50,14 @@ CREATE TABLE practical_work (
     FOREIGN KEY (test_id) REFERENCES tests(id)
 );
 
--- Таблица родителей
-CREATE TABLE parents (
+-- Таблица ответов
+CREATE TABLE answers (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
+    test_id INT NOT NULL,
+    student_id INT NOT NULL,
+    score INT CHECK (score BETWEEN 1 AND 5),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (test_id) REFERENCES tests(id),
+    FOREIGN KEY (student_id) REFERENCES users(id)
 );

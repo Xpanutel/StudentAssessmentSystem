@@ -9,12 +9,10 @@ require_once __DIR__ . '/routes/web.php';
 // Подключение скриптов по клиенту
 require_once __DIR__ . '/app/Models/User.php';
 require_once __DIR__ . '/app/Services/UserService.php';
-require_once __DIR__ . '/app/Repositories/UserRepository.php';
 require_once __DIR__ . '/app/Controllers/UserController.php';
 // Подключение скриптов для тестов
 require_once __DIR__ . '/app/Models/Test.php';
 require_once __DIR__ . '/app/Services/TestService.php';
-require_once __DIR__ . '/app/Repositories/TestRepository.php';
 require_once __DIR__ . '/app/Controllers/TestController.php';
 // Подключение миддливаре
 require_once __DIR__ . '/app/Middleware/RoleMiddleware.php';
@@ -30,14 +28,12 @@ $router = new Router();
 
 // Инициализация репозитория, сервиса, контроллера, модели для пользователей
 $userModel = new User($connection);
-$userRepository = new UserRepository($userModel);
-$userService = new UserService($userRepository);
+$userService = new UserService($userModel);
 $userController = new UserController($userService);
 
 // Инициализация репозитория, сервиса, контроллера, модели для тестов
 $testModel = new Test($connection);
-$testRepository = new TestRepository($testModel);
-$testService = new TestService($testRepository);
+$testService = new TestService($testModel);
 $testController = new TestController($testService);
 
 // Инициализция миддлеваре
@@ -84,27 +80,31 @@ $router->get('/logout', function() use ($userController) {
     $user = $userController->logout(); 
 });
 
-$router->get('/addtest', function() {
-    include 'app/Views/test/add_test.php';
+$router->get('/tests', function() use ($testController) {
+    $tests = $testController->listTests();
+    include 'app/Views/tests/list.php'; 
 });
 
-$router->get('/viewstest', function() use ($testController, $userController) {
-    $tests = $testController->listTests($_SESSION['requestData']['username']);
-    include 'app/Views/test/view_tests.php';
+$router->get('/tests/create', function() {
+    include 'app/Views/tests/create.php'; 
 });
 
-$router->post('/addtest', function() use ($testController, $userController) {
+$router->post('/tests/create', function() use ($testController) {
     $requestData = $_POST;
-    $user = $userController->getCurrentUser(); 
-    try {
-        $testController->createTest($requestData, $user);
-        echo "<p>Пользователь успешно зарегистрирован!</p>";
-        header("Location: /profile");
-    } catch (Exception $e) {
-        echo "Ошибка: " . $e->getMessage();
-        include 'app/Views/user/register.php';
-    }
+    $testController->createTest($requestData);
 });
+
+$router->get('/tests/{id}', function($id) use ($testController) {
+    $data = $testController->viewTest($id);
+    include 'app/Views/tests/view.php'; 
+});
+
+$router->post('/tests/submit', function() use ($testController) {
+    $testId = $_POST['test_id'];
+    $data = $testController->viewTest($testId); 
+    include 'app/Views/tests/results.php'; 
+});
+
 
 // Резолвим запрос
 $router->resolve();

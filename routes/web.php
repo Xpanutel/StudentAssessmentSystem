@@ -15,11 +15,19 @@ class Router {
         $requestMethod = $_SERVER['REQUEST_METHOD'];
         $requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-        if (isset($this->routes[$requestMethod][$requestPath])) {
-            call_user_func($this->routes[$requestMethod][$requestPath]);
-        } else {
-            $this->handleNotFound();
+        foreach ($this->routes[$requestMethod] as $path => $handler) {
+            if (preg_match($this->convertToRegex($path), $requestPath, $matches)) {
+                array_shift($matches);
+                call_user_func_array($handler, $matches);
+                return;
+            }
         }
+
+        $this->handleNotFound();
+    }
+
+    private function convertToRegex(string $path): string {
+        return '#^' . preg_replace('/{(\w+)}/', '([^/]+)', $path) . '$#';
     }
 
     private function handleNotFound(): void {

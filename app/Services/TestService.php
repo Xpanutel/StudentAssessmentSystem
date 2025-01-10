@@ -1,26 +1,41 @@
 <?php
 
-class TestService 
+class TestService
 {
-    private TestRepository $testRepository;
+    private Test $testModel;
 
-    public function __construct(TestRepository $testRepository) 
+    public function __construct(Test $testModel)
     {
-        $this->testRepository = $testRepository;
+        $this->testModel = $testModel;
     }
 
-    public function addTest(string $title, string $description, int $created_by): void 
+    public function createTest(string $title, string $description, int $createdBy, array $questions): void
     {
-        $this->testRepository->createTest($title, $description, $created_by);
+        if (empty($title) || empty($questions)) {
+            throw new Exception("Заголовок теста и вопросы обязательны.");
+        }
+
+        foreach ($questions as $question) {
+            if (empty($question['text']) || empty($question['correct'])) {
+                throw new Exception("Каждый вопрос должен иметь текст и правильный ответ.");
+            }
+        }
+
+        $this->testModel->createTest($title, $description, $createdBy, $questions);
     }
 
-    public function getTests(string $username): array 
+    public function getTestsByTeacher(int $teacherId): array
     {
-        return $this->testRepository->getTestsByTeacher($username);
+        return $this->testModel->getTestsByTeacher($teacherId);
     }
 
-    public function getTestResults(int $testId): ?array 
+    public function getTestById(int $testId): array
     {
-        return $this->testRepository->getResultsByTest($testId);
+        return $this->testModel->getTestById($testId);
+    }
+
+    public function getQuestionsByTestId(int $testId): array
+    {
+        return $this->testModel->getQuestionsByTestId($testId);
     }
 }

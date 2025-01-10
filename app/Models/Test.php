@@ -1,49 +1,51 @@
 <?php
 
-class Test 
+class Test
 {
     private $db;
 
-    public function __construct($db) 
-    {   
+    public function __construct($db)
+    {
         $this->db = $db;
     }
 
-    public function createTest(string $title, string $description, int $created_by): void 
+    public function createTest(string $title, string $description, int $createdBy, array $questions): void
     {
-        $stmt = $this->db->prepare("INSERT INTO tests (title, description, created_by) VALUES (:title, :description, :created_by)");
-        $stmt->execute([
-            ':title' => $title,
-            ':description' => $description,
-            ':created_by' => $created_by
-        ]);
-    }
+        try {
+            $stmt = $this->db->prepare("INSERT INTO tests (title, description, created_by) VALUES (?, ?, ?)");
+            $stmt->execute([$title, $description, $createdBy]);
+            $testId = $this->db->lastInsertId();
 
-    public function getTestsByTeacher(string $username): array 
-    {
-        $stmt = $this->db->prepare("SELECT * FROM tests t JOIN users u 
-        ON t.created_by = u.id WHERE u.username = :username ; ");
-        $stmt->execute([':username' => $username]);
-
-        $tests = [];
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            // Создаем объект Test, передавая все необходимые параметры
-            $tests[] = [
-                'id' => $row['id'],
-                'title' => $row['title'],
-                'description' => $row['description'],
-                'created_by' => $row['created_by'],
-                'created_at' => $row['created_at'],
-                'updated_at' => $row['updated_at'],
-            ];
+            foreach ($questions as $question) {
+                $stmt = $this->db->prepare("INSERT INTO questions (test_id, question_text, correct_answer) VALUES (?, ?, ?)");
+                if (!$stmt->execute([$testId, $question['text'], $question['correct']])) {
+                    error_log("Ошибка при добавлении вопроса: " . implode(", ", $stmt->errorInfo()));
+                }
+            }
+        } catch (Exception $e) {
+            error_log("Ошибка при создании теста: " . $e->getMessage());
+            throw new Exception("Не удалось создать тест. Пожалуйста, попробуйте еще раз.");
         }
-        return $tests;
     }
 
-
-    public function getResultsByTest(int $testId): void 
+    public function getTestsByTeacher(int $teacherId): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM results WHERE test_id = :test_id");
-        $stmt->execute([':test_id' => $testId]);
+        $stmt = $this->db->prepare("SELECT * FROM tests WHERE created_by = ?");
+        $stmt->execute([$teacherId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTestById(int $testId): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM tests WHERE id = ?");
+        $stmt->execute([$testId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getQuestionsByTestId(int $testId): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM questions WHERE test_id = ? ");
+        $stmt->execute([$testId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

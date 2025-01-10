@@ -2,23 +2,23 @@
 
 class UserService
 {
-    private UserRepository $userRepository;
+    private User $userModel;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(User $userModel)
     {
-        $this->userRepository = $userRepository;
+        $this->userModel = $userModel;
     }
 
     public function registerUser(string $username, string $password, string $role, string $email): void
     {
-        if ($this->userRepository->getUserByUsername($username)) {
+        if ($this->userModel->findByUsername($username)) {
             throw new Exception('Пользователь с таким именем уже существует.');
         }
-        $this->userRepository->createUser($username, $password, $role, $email);
+        $this->userModel->create($username, $password, $role, $email);
     }
 
     public function authenticate(string $email, string $password): array {
-        $user = $this->userRepository->getUserByEmail($email);
+        $user = $this->userModel->findByEmail($email);
     
         if (!$user) {
             throw new Exception("Пользователь не найден. Email: $email");
@@ -31,5 +31,5 @@ class UserService
         return $user; 
     }
     
-    public function getCurrentUser(): ?array { return $this->userRepository->getUserByUsername($_SESSION['user']['username']); }
+    public function getCurrentUser(): ?array { return $this->userModel->findByUsername($_SESSION['user']['username']); }
 }

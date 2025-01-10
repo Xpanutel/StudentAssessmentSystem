@@ -18,7 +18,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link" href="../../src/page/Test.html">/Тесты</a>
+            <a class="nav-link" href="/tests">/Тесты</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" href="/profile">/Личный кабинет</a>
@@ -76,8 +76,8 @@
                 <div class="card text-center">
                     <div class="card-body d-flex flex-column align-items-center"> 
                         <h5 class="card-title">Управление тестами</h5>
-                        <button type="button" class="btn btn-success mb-2 w-100" onclick="window.location.href='Tests/CreateTest.html';">Создать</button>
-                        <button type="button" class="btn btn-primary w-100" onclick="window.location.href='Children.html';">Редактировать</button>
+                        <button type="button" class="btn btn-success mb-2 w-100" onclick="window.location.href='/tests/create'">Создать</button>
+                        <button type="button" class="btn btn-success mb-2 w-100" onclick="window.location.href='/tests'">Посмотреть</button>
                     </div>
                 </div>
             </div>
