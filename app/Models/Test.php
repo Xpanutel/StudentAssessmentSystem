@@ -48,4 +48,11 @@ class Test
         $stmt->execute([$testId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getAnswerByStudent(int $studentID): array
+    {
+        $stmt = $this->db->prepare("SELECT * FROM answers WHERE student_id = ?");
+        $stmt->execute([$studentID]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

@@ -38,4 +38,9 @@ class TestService
     {
         return $this->testModel->getQuestionsByTestId($testId);
     }
+
+    public function getAnswerByStudent(int $studentID): array
+    {
+        return $this->testModel->getAnswerByStudent($studentID);
+    }
 }

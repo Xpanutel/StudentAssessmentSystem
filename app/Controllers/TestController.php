@@ -35,4 +35,9 @@ class TestController
             'questions' => $questions,
         ];
     }
+
+    public function getAnswerByStudent(int $studentID): array 
+    {
+        return $this->testService->getAnswerByStudent($studentID);
+    }
 }

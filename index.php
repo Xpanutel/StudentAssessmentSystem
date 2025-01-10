@@ -70,7 +70,7 @@ $router->post('/login', function() use ($userController){
     }
 });
 
-$router->get('/profile', function() use ($userController, $roleMiddleware, $authMiddleware){
+$router->get('/profile', function() use ($userController, $roleMiddleware, $authMiddleware, $testController){
     $authMiddleware->checkAuth();
     $user = $userController->getCurrentUser();
     include 'app/Views/user/profile.php';
