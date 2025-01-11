@@ -102,7 +102,12 @@ $router->get('/tests/{id}', function($id) use ($testController) {
 $router->post('/tests/submit', function() use ($testController) {
     $testId = $_POST['test_id'];
     $data = $testController->viewTest($testId); 
-    include 'app/Views/tests/results.php'; 
+    include 'app/Views/tests/test_results.php'; 
+});
+
+$router->get('/tests/result/{id}', function($id) use ($testController) {
+    $data = $testController->getResultTestById($id); 
+    include 'app/Views/tests/all_students_results.php'; 
 });
 
 

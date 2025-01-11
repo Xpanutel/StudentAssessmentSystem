@@ -38,7 +38,7 @@
         <ul class="list-group">
             <?php foreach ($tests as $test): ?>
                 <li class="list-group-item">
-                    <a href="/tests/<?= $test['id'] ?>"><?= htmlspecialchars($test['title']) ?></a>
+                    <a href="/tests/result/<?= $test['id'] ?>"><?= htmlspecialchars($test['title']) ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>

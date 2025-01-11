@@ -54,6 +54,12 @@ class TestService
         $this->testModel->sendTestResult($testId, $studentId, $score);
     }
 
+    public function getResultTestById(int $testId): array 
+    {
+        $this->validatePositiveId($testId, "теста");
+        return $this->testModel->getResultTestById($testId);
+    }
+
     private function validateCreateTestInputs(string $title, array $questions): void
     {
         if (empty($title) || empty($questions)) {

@@ -93,6 +93,17 @@ class Test
         }
     }
 
+    public function getResultTestById(int $testId): array 
+    {
+        $this->validateTestId($testId);
+
+        $stmt = $this->db->prepare("SELECT tests.title AS test_title, users.username AS student_name, answers.created_at AS date_taken, answers.score 
+            FROM answers JOIN tests ON answers.test_id = tests.id JOIN users ON answers.student_id = users.id 
+            WHERE users.role = 'student' AND tests.id = ?;");
+        $stmt->execute([$testId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     private function validateTestId(int $testId): void
     {
         if ($testId <= 0) {
