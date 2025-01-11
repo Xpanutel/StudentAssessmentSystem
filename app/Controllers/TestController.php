@@ -12,7 +12,11 @@ class TestController
     public function createTest(array $requestData): void
     {
         try {
+            if (empty($requestData['title']) || empty($requestData['questions'])) {
+                throw new Exception("Заголовок теста и вопросы обязательны.");
+            }
             $this->testService->createTest($requestData['title'], $requestData['description'], $requestData['created_by'], $requestData['questions']);
+            header('Location: /tests'); 
         } catch (Exception $e) {
             echo "Ошибка: " . $e->getMessage();
             header('Location: /tests/create'); 
@@ -27,6 +31,9 @@ class TestController
 
     public function viewTest($testId): array
     {
+        if ($testId <= 0) {
+            throw new Exception("Некорректный идентификатор теста.");
+        }
         $test = $this->testService->getTestById($testId);
         $questions = $this->testService->getQuestionsByTestId($testId);
         
@@ -38,6 +45,17 @@ class TestController
 
     public function getAnswerByStudent(int $studentID): array 
     {
+        if ($studentID <= 0) {
+            throw new Exception("Некорректный идентификатор студента.");
+        }
         return $this->testService->getAnswerByStudent($studentID);
+    }
+
+    public function getAvailableTestsForStudent(int $studentID): array
+    {
+        if ($studentID <= 0) {
+            throw new Exception("Некорректный идентификатор студента.");
+        }
+        return $this->testService->getAvailableTestsForStudent($studentID);
     }
 }

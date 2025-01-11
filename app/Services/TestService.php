@@ -16,7 +16,7 @@ class TestService
         }
 
         foreach ($questions as $question) {
-            if (empty($question['text']) || empty($question['correct'])) {
+            if (empty($question['text']) || !isset($question['correct'])) {
                 throw new Exception("Каждый вопрос должен иметь текст и правильный ответ.");
             }
         }
@@ -26,21 +26,41 @@ class TestService
 
     public function getTestsByTeacher(int $teacherId): array
     {
+        if ($teacherId <= 0) {
+            throw new Exception("Некорректный идентификатор учителя.");
+        }
         return $this->testModel->getTestsByTeacher($teacherId);
     }
 
     public function getTestById(int $testId): array
     {
+        if ($testId <= 0) {
+            throw new Exception("Некорректный идентификатор теста.");
+        }
         return $this->testModel->getTestById($testId);
     }
 
     public function getQuestionsByTestId(int $testId): array
     {
+        if ($testId <= 0) {
+            throw new Exception("Некорректный идентификатор теста.");
+        }
         return $this->testModel->getQuestionsByTestId($testId);
     }
 
     public function getAnswerByStudent(int $studentID): array
     {
+        if ($studentID <= 0) {
+            throw new Exception("Некорректный идентификатор студента.");
+        }
         return $this->testModel->getAnswerByStudent($studentID);
+    }
+
+    public function getAvailableTestsForStudent(int $studentID): array 
+    {
+        if ($studentID <= 0) {
+            throw new Exception("Некорректный идентификатор студента.");
+        }
+        return $this->testModel->getAvailableTestsForStudent($studentID);
     }
 }

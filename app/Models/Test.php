@@ -17,6 +17,9 @@ class Test
             $testId = $this->db->lastInsertId();
 
             foreach ($questions as $question) {
+                if (empty($question['text']) || !isset($question['correct'])) {
+                    throw new Exception("Каждый вопрос должен иметь текст и правильный ответ.");
+                }
                 $stmt = $this->db->prepare("INSERT INTO questions (test_id, question_text, correct_answer) VALUES (?, ?, ?)");
                 if (!$stmt->execute([$testId, $question['text'], $question['correct']])) {
                     error_log("Ошибка при добавлении вопроса: " . implode(", ", $stmt->errorInfo()));
@@ -30,6 +33,9 @@ class Test
 
     public function getTestsByTeacher(int $teacherId): array
     {
+        if ($teacherId <= 0) {
+            throw new Exception("Некорректный идентификатор учителя.");
+        }
         $stmt = $this->db->prepare("SELECT * FROM tests WHERE created_by = ?");
         $stmt->execute([$teacherId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -37,6 +43,9 @@ class Test
 
     public function getTestById(int $testId): array
     {
+        if ($testId <= 0) {
+            throw new Exception("Некорректный идентификатор теста.");
+        }
         $stmt = $this->db->prepare("SELECT * FROM tests WHERE id = ?");
         $stmt->execute([$testId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -44,14 +53,33 @@ class Test
 
     public function getQuestionsByTestId(int $testId): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM questions WHERE test_id = ? ");
+        if ($testId <= 0) {
+            throw new Exception("Некорректный идентификатор теста.");
+        }
+        $stmt = $this->db->prepare("SELECT * FROM questions WHERE test_id = ?");
         $stmt->execute([$testId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getAnswerByStudent(int $studentID): array
     {
-        $stmt = $this->db->prepare("SELECT * FROM answers WHERE student_id = ?");
+        if ($studentID <= 0) {
+            throw new Exception("Некорректный идентификатор студента.");
+        }
+        $stmt = $this->db->prepare("SELECT t.title, a.score, a.created_at 
+            FROM answers a JOIN tests t ON a.test_id = t.id 
+            JOIN users u ON a.student_id = u.id WHERE u.id = ?");
+        $stmt->execute([$studentID]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAvailableTestsForStudent(int $studentID): array 
+    {
+        if ($studentID <= 0) {
+            throw new Exception("Некорректный идентификатор студента.");
+        }
+        $stmt = $this->db->prepare("SELECT t.id, t.title, t.description
+            FROM tests t LEFT JOIN answers a ON t.id = a.test_id AND a.student_id = ? WHERE a.id IS NULL");
         $stmt->execute([$studentID]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

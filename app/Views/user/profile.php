@@ -18,9 +18,6 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/tests">Тесты</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link active" href="/profile">Личный кабинет</a>
                     </li>
                     <li class="nav-item">
@@ -83,26 +80,55 @@
             </div>
         <?php } else { 
             $ans = $testController->getAnswerByStudent($user['id']);     
+            $testInfo = $testController->getAvailableTestsForStudent($user['id']);
         ?> 
             <div class="mt-5">
-                <div id="typewriter">
-                    <span id="text" style="font-size: 25px;"></span>
+                <div id="typewriter_one">
+                    <span id="text_one" style="font-size: 25px;"></span>
                 </div>
 
                 <table class="table table-striped mt-3">
                     <thead class="table-dark">
                         <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Оценка</th>
+                            <th scope="col">Название теста</th>
+                            <th scope="col">Ваша оценка</th>
                             <th scope="col">Дата прохождения</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($ans as $answer) { ?>
                             <tr>
-                                <td><?= htmlspecialchars($answer['test_id']) ?></td>
+                                <td><?= htmlspecialchars($answer['title']) ?></td>
                                 <td><?= htmlspecialchars($answer['score']) ?></td>
                                 <td><?= htmlspecialchars($answer['created_at']) ?></td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-5">
+                <div id="typewriter_two">
+                    <span id="text_two" style="font-size: 25px;"></span>
+                </div>
+
+                <table class="table table-striped mt-3">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Название теста</th>
+                            <th scope="col">Описание теста</th>
+                            <th scope="col">Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($testInfo as $tests) { ?>
+                            <tr>
+                                <td><?= htmlspecialchars($tests['title']) ?></td>
+                                <td><?= htmlspecialchars($tests['description']) ?></td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm" 
+                                    onclick="window.location.href='/tests/<?= $tests['id'] ?>'">Пройти тест</button>
+                                </td>
                             </tr>
                         <?php } ?>
                     </tbody>
@@ -113,6 +139,6 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/Test.js"></script>
+    <script src="/app/Src/test.js"></script>
 </body>
 </html>
