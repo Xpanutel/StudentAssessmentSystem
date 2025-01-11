@@ -12,50 +12,81 @@ class TestController
     public function createTest(array $requestData): void
     {
         try {
-            if (empty($requestData['title']) || empty($requestData['questions'])) {
-                throw new Exception("Заголовок теста и вопросы обязательны.");
-            }
-            $this->testService->createTest($requestData['title'], $requestData['description'], $requestData['created_by'], $requestData['questions']);
-            header('Location: /tests'); 
+            $this->validateCreateTestRequest($requestData);
+
+            $this->testService->createTest(
+                $requestData['title'],
+                $requestData['description'] ?? '',
+                $requestData['created_by'],
+                $requestData['questions']
+            );
+
+            header('Location: /tests');
+            exit; 
+        } catch (InvalidArgumentException $e) {
+            $this->handleError($e->getMessage(), '/tests/create');
         } catch (Exception $e) {
-            echo "Ошибка: " . $e->getMessage();
-            header('Location: /tests/create'); 
+            $this->handleError("Ошибка при создании теста: " . $e->getMessage(), '/tests/create');
         }
     }
 
     public function listTests(): array
     {
-        $teacherId = $_SESSION['user']['id'];
+        $teacherId = $_SESSION['user']['id'] ?? 0; 
         return $this->testService->getTestsByTeacher($teacherId);
     }
 
-    public function viewTest($testId): array
+    public function viewTest(int $testId): array
     {
-        if ($testId <= 0) {
-            throw new Exception("Некорректный идентификатор теста.");
-        }
+        $this->validatePositiveId($testId, "теста");
+
         $test = $this->testService->getTestById($testId);
         $questions = $this->testService->getQuestionsByTestId($testId);
-        
+
         return [
             'test' => $test,
             'questions' => $questions,
         ];
     }
 
-    public function getAnswerByStudent(int $studentID): array 
+    public function getAnswerByStudent(int $studentId): array 
     {
-        if ($studentID <= 0) {
-            throw new Exception("Некорректный идентификатор студента.");
-        }
-        return $this->testService->getAnswerByStudent($studentID);
+        $this->validatePositiveId($studentId, "студента");
+        return $this->testService->getAnswerByStudent($studentId);
     }
 
-    public function getAvailableTestsForStudent(int $studentID): array
+    public function getAvailableTestsForStudent(int $studentId): array
     {
-        if ($studentID <= 0) {
-            throw new Exception("Некорректный идентификатор студента.");
+        $this->validatePositiveId($studentId, "студента");
+        return $this->testService->getAvailableTestsForStudent($studentId);
+    }
+
+    public function sendTestResult(int $testId, int $studentId, float $score): void
+    {
+        $this->validatePositiveId($testId, "теста");
+        $this->validatePositiveId($studentId, "студента");
+
+        $this->testService->sendTestResult($testId, $studentId, $score);
+    }
+
+    private function validateCreateTestRequest(array $requestData): void
+    {
+        if (empty($requestData['title']) || empty($requestData['questions'])) {
+            throw new InvalidArgumentException("Заголовок теста и вопросы обязательны.");
         }
-        return $this->testService->getAvailableTestsForStudent($studentID);
+    }
+
+    private function validatePositiveId(int $id, string $entityName): void
+    {
+        if ($id <= 0) {
+            throw new InvalidArgumentException("Некорректный идентификатор $entityName.");
+        }
+    }
+
+    private function handleError(string $message, string $redirectUrl): void
+    {
+        echo "Ошибка: " . $message;
+        header("Location: $redirectUrl");
+        exit; 
     }
 }
