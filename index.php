@@ -1,9 +1,14 @@
 <?php
 session_start();
 
+require 'vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 // Подключение основных конфигов
 require_once __DIR__ . '/config/database.php'; 
 require_once __DIR__ . '/config/DatabaseConnection.php';
+require_once __DIR__ . '/config/email.php';
 // Подключение роутера
 require_once __DIR__ . '/routes/web.php';
 // Подключение скриптов по клиенту
@@ -14,6 +19,8 @@ require_once __DIR__ . '/app/Controllers/UserController.php';
 require_once __DIR__ . '/app/Models/Test.php';
 require_once __DIR__ . '/app/Services/TestService.php';
 require_once __DIR__ . '/app/Controllers/TestController.php';
+// подключение контроллера для работы с email
+require_once __DIR__ . '/app/Controllers/EmailController.php';
 // Подключение миддливаре
 require_once __DIR__ . '/app/Middleware/RoleMiddleware.php';
 require_once __DIR__ . '/app/Middleware/AuthMiddleware.php';
@@ -35,6 +42,9 @@ $userController = new UserController($userService);
 $testModel = new Test($connection);
 $testService = new TestService($testModel);
 $testController = new TestController($testService);
+
+// Инициализация контроллера для работы с почтой 
+$emailController = new EmailController($emailConfig);
 
 // Инициализция миддлеваре
 $roleMiddleware = new RoleMiddleware();
@@ -99,7 +109,7 @@ $router->get('/tests/{id}', function($id) use ($testController) {
     include 'app/Views/tests/view.php'; 
 });
 
-$router->post('/tests/submit', function() use ($testController) {
+$router->post('/tests/submit', function() use ($testController, $emailController) {
     $testId = $_POST['test_id'];
     $data = $testController->viewTest($testId); 
     include 'app/Views/tests/test_results.php'; 

@@ -31,6 +31,7 @@ foreach ($data['questions'] as $index => $question) {
 
 $grade = calculateGrade($correctAnswersCount, $totalQuestions);
 $testController->sendTestResult($data['test']['id'], $_SESSION['user']['id'], $grade);
+$emailController->sendTestResultToEmail($_SESSION['user']['email'], $grade, $data['test']['title'], $_SESSION['user']['username']);
 ?>
 
 <!DOCTYPE html>
