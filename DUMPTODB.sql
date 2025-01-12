@@ -41,13 +41,11 @@ CREATE TABLE questions (
 CREATE TABLE practical_work (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT NOT NULL,
-    test_id INT NOT NULL,
     file_path VARCHAR(255) NOT NULL,
     score INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES users(id),
-    FOREIGN KEY (test_id) REFERENCES tests(id)
 );
 
 -- Таблица ответов

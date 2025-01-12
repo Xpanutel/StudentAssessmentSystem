@@ -21,6 +21,9 @@ require_once __DIR__ . '/app/Services/TestService.php';
 require_once __DIR__ . '/app/Controllers/TestController.php';
 // подключение контроллера для работы с email
 require_once __DIR__ . '/app/Controllers/EmailController.php';
+// подключение контроллера  и сервиса для загрузки файлов 
+require_once __DIR__ . '/app/Controllers/FileUploadController.php';
+require_once __DIR__ . '/app/Services/FileUploadService.php';
 // Подключение миддливаре
 require_once __DIR__ . '/app/Middleware/RoleMiddleware.php';
 require_once __DIR__ . '/app/Middleware/AuthMiddleware.php';
@@ -45,6 +48,10 @@ $testController = new TestController($testService);
 
 // Инициализация контроллера для работы с почтой 
 $emailController = new EmailController($emailConfig);
+
+// Инициализация сервиса и контроллера для работы с файлами
+$fileUploadService = new FileUploadService($connection);
+$fileUploadController = new FileUploadController($fileUploadService);
 
 // Инициализция миддлеваре
 $roleMiddleware = new RoleMiddleware();
@@ -120,6 +127,26 @@ $router->get('/tests/result/{id}', function($id) use ($testController) {
     include 'app/Views/tests/all_students_results.php'; 
 });
 
+$router->post('/upload', function() use($fileUploadController){
+    $requestData = $_POST;
+    try {
+        $fileUploadController->upload($requestData);
+        header("Location: /sucess");
+        exit();
+    } catch (Exception $e) {
+        echo "Ошибка: " . $e->getMessage();
+        header('Location: /upload');
+        exit();
+    }
+});
+
+$router->get('/upload', function() {
+    include 'app/Views/file/upload.php'; 
+});
+
+$router->get('/success', function() {
+    include 'app/Views/file/success.php'; 
+});
 
 // Резолвим запрос
 $router->resolve();
