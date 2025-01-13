@@ -21,9 +21,6 @@ require_once __DIR__ . '/app/Services/TestService.php';
 require_once __DIR__ . '/app/Controllers/TestController.php';
 // подключение контроллера для работы с email
 require_once __DIR__ . '/app/Controllers/EmailController.php';
-// подключение контроллера  и сервиса для загрузки файлов 
-require_once __DIR__ . '/app/Controllers/FileUploadController.php';
-require_once __DIR__ . '/app/Services/FileUploadService.php';
 // Подключение миддливаре
 require_once __DIR__ . '/app/Middleware/RoleMiddleware.php';
 require_once __DIR__ . '/app/Middleware/AuthMiddleware.php';
@@ -49,16 +46,12 @@ $testController = new TestController($testService);
 // Инициализация контроллера для работы с почтой 
 $emailController = new EmailController($emailConfig);
 
-// Инициализация сервиса и контроллера для работы с файлами
-$fileUploadService = new FileUploadService($connection);
-$fileUploadController = new FileUploadController($fileUploadService);
-
 // Инициализция миддлеваре
 $roleMiddleware = new RoleMiddleware();
 $authMiddleware = new AuthMiddleware();
 
 // Тут пишем маршуруты
-$router->get('/auth', function() {
+$router->get('/', function() {
     include 'app/Views/user/auth.php';
 });
 
@@ -112,41 +105,62 @@ $router->post('/tests/create', function() use ($testController) {
 });
 
 $router->get('/tests/{id}', function($id) use ($testController) {
-    $data = $testController->viewTest($id);
+    $data = $testController->viewTest((int)$id); 
     include 'app/Views/tests/view.php'; 
 });
 
-$router->post('/tests/submit', function() use ($testController, $emailController) {
-    $testId = $_POST['test_id'];
-    $data = $testController->viewTest($testId); 
-    include 'app/Views/tests/test_results.php'; 
-});
+// $router->post('/tests/submit', function() use ($testController, $emailController) {
+//     $requestData = $_POST;
+//     $testId = (int)$_POST['test_id']; 
+//     $data = $testController->viewTest($testId); 
+//     $testController->upload($requestData);
+//     include 'app/Views/tests/test_results.php'; 
+// });
 
 $router->get('/tests/result/{id}', function($id) use ($testController) {
-    $data = $testController->getResultTestById($id); 
+    $data = $testController->getResultTestById((int)$id); 
     include 'app/Views/tests/all_students_results.php'; 
 });
 
-$router->post('/upload', function() use($fileUploadController){
-    $requestData = $_POST;
+$router->post('/tests/submit', function() use ($testController, $emailController) {
     try {
-        $fileUploadController->upload($requestData);
-        header("Location: /sucess");
-        exit();
+        if (!isset($_POST['test_id'])) {
+            throw new InvalidArgumentException('Некорректный идентификатор теста.');
+        }
+
+        $testId = (int)$_POST['test_id'];
+        $requestData = $_POST;
+
+        // Получение данных теста
+        $data = $testController->viewTest($testId);
+        if (!$data) {
+            throw new RuntimeException('Тест не найден.');
+        }
+
+        // Обработка ответов
+        $testController->upload($requestData);
+
+        include 'app/Views/tests/test_results.php';
+
+    } catch (InvalidArgumentException $e) {
+        $_SESSION['error_message'] = $e->getMessage();
+        error_log($e->getMessage());
+        header('Location: /profile'); 
+        exit;
+    } catch (RuntimeException $e) {
+        $_SESSION['error_message'] = $e->getMessage();
+        error_log($e->getMessage());
+        header('Location: /profile'); 
+        exit;
     } catch (Exception $e) {
-        echo "Ошибка: " . $e->getMessage();
-        header('Location: /upload');
-        exit();
+        $_SESSION['error_message'] = 'Произошла непредвиденная ошибка. Пожалуйста, попробуйте еще раз.';
+        error_log($e->getMessage());
+        header('Location: /profile'); 
+        exit;
     }
 });
 
-$router->get('/upload', function() {
-    include 'app/Views/file/upload.php'; 
-});
 
-$router->get('/success', function() {
-    include 'app/Views/file/success.php'; 
-});
 
 // Резолвим запрос
 $router->resolve();

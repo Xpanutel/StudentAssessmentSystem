@@ -21,13 +21,16 @@
 <body>
 <button type="button" class="btn btn-secondary" onclick="window.location.href='/profile'">В ЛИЧНЫЙ КАБИНЕТ</button>
 
-    <div class="container">
-        <h1 class="text-center"><?= htmlspecialchars($data['test']['title']) ?></h1>
-        <p class="text-center"><?= htmlspecialchars($data['test']['description']) ?></p>
+<div class="container">
+    <h1 class="text-center"><?= htmlspecialchars($data['test']['title']) ?></h1>
+    <p class="text-center"><?= htmlspecialchars($data['test']['description']) ?></p>
 
-        <h2>Вопросы</h2>
-        <form action="/tests/submit" method="POST">
-            <input type="hidden" name="test_id" value="<?= $data['test']['id'] ?>"> 
+    <h2>Вопросы</h2>
+    <form id="combinedForm" action="/tests/submit" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="test_id" value="<?= $data['test']['id'] ?>"> 
+
+        <!-- Вопросы -->
+        <div id="questionsSection">
             <?php foreach ($data['questions'] as $index => $question): ?>
                 <div class="mb-3">
                     <p><?= htmlspecialchars($question['question_text']) ?></p>
@@ -36,9 +39,37 @@
                     <input type="text" name="questions[<?= $index ?>][user_answer]" class="form-control" placeholder="Ваш ответ" required>
                 </div> 
             <?php endforeach; ?>
+            <button type="button" class="btn btn-primary" onclick="showUploadSection()">Далее</button>
+        </div>
+
+        <!-- Загрузка изображения -->
+        <div id="uploadSection" style="display: none; margin-top: 20px;">
+            <h2>Загрузить изображение</h2>
+
+            <?php if (isset($_SESSION['error_message'])): ?>
+                <div class="alert alert-danger">
+                    <?= htmlspecialchars($_SESSION['error_message']) ?>
+                    <?php unset($_SESSION['error_message']); // Удаляем сообщение после отображения ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="form-group">
+                <label for="image">Выберите изображение:</label>
+                <input type="file" class="form-control-file" name="image" accept="image/*" required>
+            </div>
             <button type="submit" class="btn btn-primary">Отправить ответы</button>
-        </form>
-    </div>
+        </div>
+    </form>
+</div>
+
+<script>
+function showUploadSection() {
+    // Скрываем секцию с вопросами и показываем секцию загрузки изображения
+    document.getElementById('questionsSection').style.display = 'none';
+    document.getElementById('uploadSection').style.display = 'block';
+}
+</script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

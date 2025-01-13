@@ -29,9 +29,12 @@ foreach ($data['questions'] as $index => $question) {
     }
 }
 
+$file = $_FILES['image'];
+var_dump($file);
+
 $grade = calculateGrade($correctAnswersCount, $totalQuestions);
 $testController->sendTestResult($data['test']['id'], $_SESSION['user']['id'], $grade);
-$emailController->sendTestResultToEmail($_SESSION['user']['email'], $grade, $data['test']['title'], $_SESSION['user']['username']);
+$emailController->sendTestResultsToEmail($_SESSION['user']['email'], $grade, 5, $data['test']['title'], $_SESSION['user']['username'], $file['name']);
 ?>
 
 <!DOCTYPE html>
@@ -103,6 +106,11 @@ $emailController->sendTestResultToEmail($_SESSION['user']['email'], $grade, $dat
         <p>Процент правильных ответов: <?= round(($correctAnswersCount / $totalQuestions) * 100, 2) ?>%</p>
         <p>Ваша оценка: <?= $grade ?></p>
 
+        <?php if (isset($file['name']) && $file['error'] === UPLOAD_ERR_OK): ?>
+            <h2>Загруженное изображение</h2>
+            <img src="<?= escapeHtml('/uploads/' . $file['name']) ?>" alt="Загруженное изображение" class="img-fluid" />
+        <?php endif; ?>
+        
         <a href="/tests">Вернуться к списку тестов</a>
     </div>
 

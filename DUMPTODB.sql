@@ -1,8 +1,8 @@
 -- Создание базы данных
-CREATE DATABASE StudentAssessmentSystem;
+CREATE DATABASE school;
 
 -- Использование базы данных
-USE StudentAssessmentSystem;
+USE school;
 
 -- Таблица пользователей
 CREATE TABLE users (
@@ -29,7 +29,7 @@ CREATE TABLE tests (
 --  Вопросы для тестов
 CREATE TABLE questions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    test_id INT NOT NULL UNIQUE,
+    test_id INT NOT NULL,
     question_text TEXT NOT NULL,
     correct_answer TEXT NOT NULL,  
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -41,11 +41,14 @@ CREATE TABLE questions (
 CREATE TABLE practical_work (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT NOT NULL,
+    test_id INT NOT NULL,
     file_path VARCHAR(255) NOT NULL,
+    file_size VARCHAR(255) NOT NULL,
     score INT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES users(id),
+    FOREIGN KEY (test_id) REFERENCES tests(id)
 );
 
 -- Таблица ответов

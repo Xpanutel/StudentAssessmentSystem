@@ -32,7 +32,7 @@ class UserController
     {
         $_SESSION = [];
         session_destroy();
-        header("Location: /auth");
+        header("Location: /");
         exit;
     }
 
