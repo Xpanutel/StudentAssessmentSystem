@@ -54,4 +54,8 @@ class TestService
        return $this->testModel->saveFile($student_id, $testId, $filePath, $filesize);
     }
 
+    public function getPracticalWork(int $studentId, int $testId): array
+    {
+        return $this->testModel->getPracticalWorkByStudentId($studentId, $testId);
+    }
 }

@@ -63,7 +63,8 @@ class TestController
         return $this->testService->getResultTestById($testId);
     }
 
-    public function upload(array $requestData): void {
+    public function upload(array $requestData): void 
+    {
         try {
             $file = $_FILES['image'];
 
@@ -87,7 +88,8 @@ class TestController
         }
     }
 
-    private function saveFile(array $file): void {
+    private function saveFile(array $file): void 
+    {
         $uploadDir = __DIR__ . '/../../uploads/';
         $fileName = basename($file['name']);
         $filePath = $uploadDir . $fileName;
@@ -99,5 +101,10 @@ class TestController
         if (!move_uploaded_file($file['tmp_name'], $filePath)) {
             throw new RuntimeException('Не удалось переместить загруженный файл.');
         }
+    }
+
+    public function showPracticalWork(int $studentId, int $testId): array 
+    {
+        return $this->testService->getPracticalWork($studentId, $testId);
     }
 }

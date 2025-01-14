@@ -67,6 +67,23 @@ $router->post('/register', function() use ($userController){
     }
 });
 
+// Тут пишем маршуруты
+$router->get('/student/reg', function() {
+    include 'app/Views/user/student_reg.php';
+});
+
+$router->post('/student/reg', function() use ($userController){
+    $requestData = $_POST;
+    try {
+        $userController->register($requestData);
+        echo "<p>Пользователь успешно зарегистрирован!</p>";
+        header("Location: /student/reg");
+    } catch (Exception $e) {
+        echo "Ошибка: " . $e->getMessage();
+        include 'app/Views/user/student_reg.php';
+    }
+});
+
 $router->post('/login', function() use ($userController){
     $requestData = $_POST;
     try {
@@ -105,21 +122,8 @@ $router->post('/tests/create', function() use ($testController) {
 });
 
 $router->get('/tests/{id}', function($id) use ($testController) {
-    $data = $testController->viewTest((int)$id); 
+    $data = $testController->viewTest($id); 
     include 'app/Views/tests/view.php'; 
-});
-
-// $router->post('/tests/submit', function() use ($testController, $emailController) {
-//     $requestData = $_POST;
-//     $testId = (int)$_POST['test_id']; 
-//     $data = $testController->viewTest($testId); 
-//     $testController->upload($requestData);
-//     include 'app/Views/tests/test_results.php'; 
-// });
-
-$router->get('/tests/result/{id}', function($id) use ($testController) {
-    $data = $testController->getResultTestById((int)$id); 
-    include 'app/Views/tests/all_students_results.php'; 
 });
 
 $router->post('/tests/submit', function() use ($testController, $emailController) {
@@ -160,7 +164,15 @@ $router->post('/tests/submit', function() use ($testController, $emailController
     }
 });
 
+$router->get('/tests/result/{id}', function($id) use ($testController) {
+    $data = $testController->getResultTestById((int)$id); 
+    include 'app/Views/tests/all_students_results.php'; 
+});
 
+$router->get('/tests/practical/{userid}/{testid}', function($userid, $testid) use ($testController) {
+    $studentWork = $testController->showPracticalWork($userid, $testid);
+    include 'app/Views/tests/practical.php'; 
+});
 
 // Резолвим запрос
 $router->resolve();

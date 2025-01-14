@@ -24,6 +24,11 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <?php if ($roleMiddleware->isTeacher($user)) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/student/reg">Добавить ученика</a>
+                        </li>
+                    <?php } ?>
                     <li class="nav-item">
                         <a class="nav-link active" href="/profile">Личный кабинет</a>
                     </li>

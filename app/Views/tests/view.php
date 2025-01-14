@@ -22,8 +22,8 @@
 <button type="button" class="btn btn-secondary" onclick="window.location.href='/profile'">В ЛИЧНЫЙ КАБИНЕТ</button>
 
 <div class="container">
-    <h1 class="text-center"><?= htmlspecialchars($data['test']['title']) ?></h1>
-    <p class="text-center"><?= htmlspecialchars($data['test']['description']) ?></p>
+    <h1 class="text-center"><?=  $data['test']['title']; ?></h1>
+    <p class="text-center"><?=  $data['test']['description']; ?></p>
 
     <h2>Вопросы</h2>
     <form id="combinedForm" action="/tests/submit" method="POST" enctype="multipart/form-data">
