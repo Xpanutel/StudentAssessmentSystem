@@ -30,7 +30,7 @@
         </div>
 
         <div class="form-container sign-in">
-            <form action="/login" method="POST">
+            <form action="/logins" method="POST">
                 <h1 id="text"></h1>
                 <input type="email" placeholder="Email" name="email" required>
                 <input type="password" placeholder="Пароль" name="password" required>

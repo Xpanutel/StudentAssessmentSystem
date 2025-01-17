@@ -67,7 +67,6 @@ $router->post('/register', function() use ($userController){
     }
 });
 
-// Тут пишем маршуруты
 $router->get('/student/reg', function() {
     include 'app/Views/user/student_reg.php';
 });
@@ -92,7 +91,7 @@ $router->post('/login', function() use ($userController){
         exit();
     } catch (Exception $e) {
         echo "Ошибка: " . $e->getMessage();
-        header('Location: /auth');
+        header('Location: /');
         exit();
     }
 });
